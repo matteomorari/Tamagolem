@@ -12,7 +12,7 @@ public class GraphTest {
   public void testCreateWorldBalance() {
     for (int i = 0; i < 1_000; i++) {
       System.err.println(i);
-      Graph graph = new Graph(4);
+      Graph graph = new Graph(5);
       for (Map.Entry<String, Node> startingNode : graph.getGraph().entrySet()) {
         if (startingNode.getValue().getEdgesValueSum() != 0) {
           System.out.println(startingNode.getKey());
