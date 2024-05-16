@@ -1,5 +1,6 @@
 package it.unibs.PgAr.Tamagolem.Graph;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,6 +17,9 @@ public class Graph {
   private int numberOfElements;
 
   public Graph(int numberOfElements) {
+    if (numberOfElements < 3 || numberOfElements > 10) {
+      throw new InvalidParameterException("The number of nods must be at least 3 and no more than 10");
+    }
     this.numberOfElements = numberOfElements;
     this.graph = new HashMap<>();
     this.createElementListName();
@@ -38,12 +42,11 @@ public class Graph {
   private void createWorldBalance() {
     // create each node
     for (int i = 0; i < this.numberOfElements; i++) {
-      // int randomNumber = RandomDraws.drawInteger(0, this.elementListName.size() -
-      // 1);
-      String newNodeName = this.elementListName.get(0);
+      int randomNumber = RandomDraws.drawInteger(0, this.elementListName.size() - 1);
+      String newNodeName = this.elementListName.get(randomNumber);
       Node newNode = new Node(newNodeName);
       this.graph.put(newNodeName, newNode);
-      this.elementListName.remove(0);
+      this.elementListName.remove(randomNumber);
     }
 
     // TODO: Map.Entry or just Entry?
@@ -60,7 +63,7 @@ public class Graph {
 
     // after set all to zero lets generate random value for edges with condition
     // that each node has zero as sum of edges
-    int numberOfLeftNodes = this.elementListName.size();
+    int numberOfLeftNodes = this.numberOfElements;
     for (Map.Entry<String, Node> startingNode : this.graph.entrySet()) {
 
       Iterator<String> iteratorArrivingNodes = startingNode.getValue().getEdgesToBeDone().iterator();
@@ -76,9 +79,8 @@ public class Graph {
           // TODO: dobbiamo controllare anche quello di arrivo ma l'importante che non sia
           // l'ultimo di partenza
           if (startingNode.getValue().getEdgesToBeDone().size() == 2) {
-            do {
-              randomEdgeValue = MyMath.drawIntegerWithExclusion(MIN, MAX, 0);
-            } while (startingNode.getValue().getEdgesValueSum() == (randomEdgeValue * -1));
+            int numberToAvoid = startingNode.getValue().getEdgesValueSum() * -1;
+            randomEdgeValue = MyMath.drawIntegerWithExclusion(MIN, MAX, 0, numberToAvoid);
           } else if (!iteratorArrivingNodes.hasNext()) {
             // for the last edge
             randomEdgeValue = startingNode.getValue().getEdgesValueSum() * -1; // even if its not random, lol
@@ -95,24 +97,39 @@ public class Graph {
           iteratorArrivingNodes.remove();
           arrivalNode.removeEdgesToBeDone(startingNode.getKey());
         }
+
         if (numberOfLeftNodes == 3) {
           String thirdLastNode = startingNode.getKey();
           String secondLastNode = arrivalNodeName;
           iteratorArrivingNodes.remove();
           String lastNode = iteratorArrivingNodes.next();
           iteratorArrivingNodes.remove();
+          int valueSecondLastEdgeThirdLastNode;
           int valueLastEdgeThirdLastNode;
           int valueLastEdgeSecondLastNode;
-          int valueLastEdgeLastNode;
           do {
-            randomEdgeValue = MyMath.drawIntegerWithExclusion(MIN, MAX, 0);
-            valueLastEdgeThirdLastNode = (this.graph.get(thirdLastNode).getEdgesValueSum() + randomEdgeValue) * -1;
-            valueLastEdgeSecondLastNode = ((this.graph.get(secondLastNode).getEdgesValueSum() + randomEdgeValue * -1) * -1);
-            valueLastEdgeLastNode = (this.graph.get(lastNode).getEdgesValueSum() + randomEdgeValue) * -1;
-          } while (valueLastEdgeThirdLastNode == 0 || valueLastEdgeSecondLastNode == 0 || valueLastEdgeLastNode == 0 || randomEdgeValue == 0);
+            // valueSecondLastEdgeThirdLastNode with the second last node (with the sign for
+            // the third last)
+            valueSecondLastEdgeThirdLastNode = MyMath.drawIntegerWithExclusion(MIN, MAX, 0);
+            // valueLastEdgeThirdLastNode with the last node (with the sign for the third
+            // last)
+            valueLastEdgeThirdLastNode = (this.graph.get(thirdLastNode).getEdgesValueSum()
+                + valueSecondLastEdgeThirdLastNode) * -1;
+            // valueLastEdgeSecondLastNode with the last node (with the sign for the second
+            // last)
+            valueLastEdgeSecondLastNode = ((this.graph.get(secondLastNode).getEdgesValueSum()
+                + valueSecondLastEdgeThirdLastNode * -1) * -1);
+
+            // If 'valueLastEdgeThirdLastNode' is different from zero means that
+            // valueSecondLastEdgeThirdLastNode is not equals to the opposite of the sum of
+            // the previous edges (for the third last node).
+            // If 'valueLastEdgeSecondLastNode' is different from zero means that
+            // valueSecondLastEdgeThirdLastNode is not equals to to the opposite of the sum
+            // of the previous edges (for the second last node).
+          } while (valueLastEdgeThirdLastNode == 0 || valueLastEdgeSecondLastNode == 0);
           // update
-          this.graph.get(thirdLastNode).updateEdgeValue(secondLastNode, randomEdgeValue);
-          this.graph.get(secondLastNode).updateEdgeValue(thirdLastNode, randomEdgeValue * -1);
+          this.graph.get(thirdLastNode).updateEdgeValue(secondLastNode, valueSecondLastEdgeThirdLastNode);
+          this.graph.get(secondLastNode).updateEdgeValue(thirdLastNode, valueSecondLastEdgeThirdLastNode * -1);
           // remove
           this.graph.get(secondLastNode).removeEdgesToBeDone(thirdLastNode);
 
@@ -128,15 +145,10 @@ public class Graph {
           // remove
           this.graph.get(lastNode).removeEdgesToBeDone(secondLastNode);
           this.graph.get(secondLastNode).removeEdgesToBeDone(lastNode);
-
         }
       }
 
       numberOfLeftNodes--;
-    }
-
-    for (Map.Entry<String, Node> startingNode : this.graph.entrySet()) {
-      System.out.println(startingNode.getValue().toString());
     }
   }
 
@@ -147,9 +159,13 @@ public class Graph {
   // TODO: create the toString @riki
   // some suggestions (to follow ty): create a matrix where the rows are the
   // starting node and the columns are the arrival node
-  // @Override
-  // public String toString() {
-
-  // }
-
+  @Override
+  public String toString() {
+    StringBuffer stringToReturn = new StringBuffer();
+    for (Map.Entry<String, Node> startingNode : this.graph.entrySet()) {
+      stringToReturn.append(startingNode.getValue().toString());
+      stringToReturn.append("\n");
+    }
+    return stringToReturn.toString();
+  }
 }

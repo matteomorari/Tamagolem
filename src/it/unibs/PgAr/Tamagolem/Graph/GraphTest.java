@@ -2,7 +2,6 @@ package it.unibs.PgAr.Tamagolem.Graph;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import static org.junit.Assert.assertNotEquals;
 
 import java.util.Map;
 
@@ -10,9 +9,8 @@ public class GraphTest {
 
   @Test
   public void testCreateWorldBalance() {
-    for (int i = 0; i < 1_000; i++) {
-      System.err.println(i);
-      Graph graph = new Graph(5);
+    for (int i = 0; i < 100_000; i++) {
+      Graph graph = new Graph(10);
       for (Map.Entry<String, Node> startingNode : graph.getGraph().entrySet()) {
         if (startingNode.getValue().getEdgesValueSum() != 0) {
           System.out.println(startingNode.getKey());
