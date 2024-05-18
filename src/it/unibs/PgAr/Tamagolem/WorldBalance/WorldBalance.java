@@ -1,4 +1,4 @@
-package it.unibs.PgAr.Tamagolem.Graph;
+package it.unibs.PgAr.Tamagolem.WorldBalance;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -9,19 +9,19 @@ import java.util.Map;
 import it.kibo.fp.lib.RandomDraws;
 import it.unibs.PgAr.Tamagolem.MyMath;
 
-public class Graph {
+public class WorldBalance {
   private static final int MAX = 5;
   private static final int MIN = -5;
-  private Map<String, Node> graph;
+  private HashMap<String, Node> worldBalance;
   private ArrayList<String> elementListName = new ArrayList<>();
   private int numberOfElements;
 
-  public Graph(int numberOfElements) {
+  public WorldBalance(int numberOfElements) {
     if (numberOfElements < 3 || numberOfElements > 10) {
       throw new InvalidParameterException("The number of nods must be at least 3 and no more than 10");
     }
     this.numberOfElements = numberOfElements;
-    this.graph = new HashMap<>();
+    this.worldBalance = new HashMap<>();
     this.createElementListName();
     this.createWorldBalance();
   }
@@ -45,14 +45,14 @@ public class Graph {
       int randomNumber = RandomDraws.drawInteger(0, this.elementListName.size() - 1);
       String newNodeName = this.elementListName.get(randomNumber);
       Node newNode = new Node(newNodeName);
-      this.graph.put(newNodeName, newNode);
+      this.worldBalance.put(newNodeName, newNode);
       this.elementListName.remove(randomNumber);
     }
 
     // TODO: Map.Entry or just Entry?
     // create empty edges for each node with each node with value zero
-    for (Map.Entry<String, Node> startingNode : this.graph.entrySet()) {
-      for (Map.Entry<String, Node> arrivalNode : this.graph.entrySet()) {
+    for (Map.Entry<String, Node> startingNode : this.worldBalance.entrySet()) {
+      for (Map.Entry<String, Node> arrivalNode : this.worldBalance.entrySet()) {
         startingNode.getValue().addNewEdge(arrivalNode.getKey(), 0);
         // the node referred to its self must stay to zero
         if (startingNode.getKey() != arrivalNode.getKey()) {
@@ -64,13 +64,13 @@ public class Graph {
     // after set all to zero lets generate random value for edges with condition
     // that each node has zero as sum of edges
     int numberOfLeftNodes = this.numberOfElements;
-    for (Map.Entry<String, Node> startingNode : this.graph.entrySet()) {
+    for (Map.Entry<String, Node> startingNode : this.worldBalance.entrySet()) {
 
       Iterator<String> iteratorArrivingNodes = startingNode.getValue().getEdgesToBeDone().iterator();
 
       while (iteratorArrivingNodes.hasNext()) {
         String arrivalNodeName = iteratorArrivingNodes.next();
-        Node arrivalNode = this.graph.get(arrivalNodeName);
+        Node arrivalNode = this.worldBalance.get(arrivalNodeName);
         int randomEdgeValue;
         if (numberOfLeftNodes > 3) {
           // we check that the penultimate edge is not already a total sum of zero because
@@ -113,11 +113,11 @@ public class Graph {
             valueSecondLastEdgeThirdLastNode = MyMath.drawIntegerWithExclusion(MIN, MAX, 0);
             // valueLastEdgeThirdLastNode with the last node (with the sign for the third
             // last)
-            valueLastEdgeThirdLastNode = (this.graph.get(thirdLastNode).getEdgesValueSum()
+            valueLastEdgeThirdLastNode = (this.worldBalance.get(thirdLastNode).getEdgesValueSum()
                 + valueSecondLastEdgeThirdLastNode) * -1;
             // valueLastEdgeSecondLastNode with the last node (with the sign for the second
             // last)
-            valueLastEdgeSecondLastNode = ((this.graph.get(secondLastNode).getEdgesValueSum()
+            valueLastEdgeSecondLastNode = ((this.worldBalance.get(secondLastNode).getEdgesValueSum()
                 + valueSecondLastEdgeThirdLastNode * -1) * -1);
 
             // If 'valueLastEdgeThirdLastNode' is different from zero means that
@@ -128,23 +128,23 @@ public class Graph {
             // of the previous edges (for the second last node).
           } while (valueLastEdgeThirdLastNode == 0 || valueLastEdgeSecondLastNode == 0);
           // update
-          this.graph.get(thirdLastNode).updateEdgeValue(secondLastNode, valueSecondLastEdgeThirdLastNode);
-          this.graph.get(secondLastNode).updateEdgeValue(thirdLastNode, valueSecondLastEdgeThirdLastNode * -1);
+          this.worldBalance.get(thirdLastNode).updateEdgeValue(secondLastNode, valueSecondLastEdgeThirdLastNode);
+          this.worldBalance.get(secondLastNode).updateEdgeValue(thirdLastNode, valueSecondLastEdgeThirdLastNode * -1);
           // remove
-          this.graph.get(secondLastNode).removeEdgesToBeDone(thirdLastNode);
+          this.worldBalance.get(secondLastNode).removeEdgesToBeDone(thirdLastNode);
 
           // update
-          this.graph.get(thirdLastNode).updateEdgeValue(lastNode, valueLastEdgeThirdLastNode);
-          this.graph.get(lastNode).updateEdgeValue(thirdLastNode, valueLastEdgeThirdLastNode * -1);
+          this.worldBalance.get(thirdLastNode).updateEdgeValue(lastNode, valueLastEdgeThirdLastNode);
+          this.worldBalance.get(lastNode).updateEdgeValue(thirdLastNode, valueLastEdgeThirdLastNode * -1);
           // remove
-          this.graph.get(lastNode).removeEdgesToBeDone(thirdLastNode);
+          this.worldBalance.get(lastNode).removeEdgesToBeDone(thirdLastNode);
 
           // update
-          this.graph.get(secondLastNode).updateEdgeValue(lastNode, valueLastEdgeSecondLastNode);
-          this.graph.get(lastNode).updateEdgeValue(secondLastNode, valueLastEdgeSecondLastNode * -1);
+          this.worldBalance.get(secondLastNode).updateEdgeValue(lastNode, valueLastEdgeSecondLastNode);
+          this.worldBalance.get(lastNode).updateEdgeValue(secondLastNode, valueLastEdgeSecondLastNode * -1);
           // remove
-          this.graph.get(lastNode).removeEdgesToBeDone(secondLastNode);
-          this.graph.get(secondLastNode).removeEdgesToBeDone(lastNode);
+          this.worldBalance.get(lastNode).removeEdgesToBeDone(secondLastNode);
+          this.worldBalance.get(secondLastNode).removeEdgesToBeDone(lastNode);
         }
       }
 
@@ -152,8 +152,8 @@ public class Graph {
     }
   }
 
-  public Map<String, Node> getGraph() {
-    return graph;
+  public Map<String, Node> getWorldBalance() {
+    return worldBalance;
   }
 
   // TODO: create the toString @riki
@@ -162,7 +162,7 @@ public class Graph {
   @Override
   public String toString() {
     StringBuffer stringToReturn = new StringBuffer();
-    for (Map.Entry<String, Node> startingNode : this.graph.entrySet()) {
+    for (Map.Entry<String, Node> startingNode : this.worldBalance.entrySet()) {
       stringToReturn.append(startingNode.getValue().toString());
       stringToReturn.append("\n");
     }

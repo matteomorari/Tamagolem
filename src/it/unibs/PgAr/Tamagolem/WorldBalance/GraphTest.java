@@ -1,4 +1,4 @@
-package it.unibs.PgAr.Tamagolem.Graph;
+package it.unibs.PgAr.Tamagolem.WorldBalance;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -10,8 +10,8 @@ public class GraphTest {
   @Test
   public void testCreateWorldBalance() {
     for (int i = 0; i < 100_000; i++) {
-      Graph graph = new Graph(10);
-      for (Map.Entry<String, Node> startingNode : graph.getGraph().entrySet()) {
+      WorldBalance graph = new WorldBalance(10);
+      for (Map.Entry<String, Node> startingNode : graph.getWorldBalance().entrySet()) {
         if (startingNode.getValue().getEdgesValueSum() != 0) {
           System.out.println(startingNode.getKey());
         }

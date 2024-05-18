@@ -1,4 +1,4 @@
-package it.unibs.PgAr.Tamagolem.Graph;
+package it.unibs.PgAr.Tamagolem.WorldBalance;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class Node {
   private String name;
-  private Map<String, Integer> nodeConnections;
+  private HashMap<String, Integer> nodeConnections;
 
   // the following parameters are used only during the creation of the balance of
   // the world to skip some cycles to improve the performance ;)
