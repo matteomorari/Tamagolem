@@ -10,8 +10,8 @@ import it.kibo.fp.lib.RandomDraws;
 import it.unibs.PgAr.Tamagolem.MyMath;
 
 public class WorldBalance {
-  private static final int MAX = 5;
-  private static final int MIN = -5;
+  private static final int MAX = 4;
+  private static final int MIN = -4;
   private HashMap<String, Node> worldBalance;
   private ArrayList<String> elementListName = new ArrayList<>();
   private int numberOfElements;
@@ -152,7 +152,7 @@ public class WorldBalance {
     }
   }
 
-  public Map<String, Node> getWorldBalance() {
+  public HashMap<String, Node> getWorldBalance() {
     return worldBalance;
   }
 

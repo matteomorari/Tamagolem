@@ -59,6 +59,10 @@ public class Node {
     return name;
   }
 
+  public int getConnectionValueForNode(String node){
+    return this.nodeConnections.get(node);
+  }
+
   // // TODO: change name
   // public void createRandomEdge() {
   // ArrayList<Integer> edgesToBeDone = new ArrayList<>();
