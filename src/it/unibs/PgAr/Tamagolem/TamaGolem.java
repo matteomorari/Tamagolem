@@ -33,6 +33,10 @@ public class TamaGolem {
     }
   }
 
+  public int getStonesAvailableHashCode(){
+    return this.stonesAvailable.hashCode();
+  }
+
   /**
    * Reduces the life of the TamaGolem by the specified value.
    * 

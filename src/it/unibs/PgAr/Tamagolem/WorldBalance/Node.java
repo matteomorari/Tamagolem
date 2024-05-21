@@ -59,43 +59,8 @@ public class Node {
     return name;
   }
 
-  public int getConnectionValueForNode(String node){
+  public int getConnectionValueForNode(String node) {
     return this.nodeConnections.get(node);
-  }
-
-  // // TODO: change name
-  // public void createRandomEdge() {
-  // ArrayList<Integer> edgesToBeDone = new ArrayList<>();
-  // int edgesValueSum = 0;
-  // for (Map.Entry<Integer, Integer> currentNode :
-  // this.nodeConnections.entrySet()) {
-  // // TODO: add comment
-  // if (this.name.hashCode() != currentNode.getKey()) {
-  // if (currentNode.getValue() != 0) {
-  // edgesValueSum += currentNode.getValue();
-  // } else {
-  // edgesToBeDone.add(currentNode.getKey());
-  // }
-  // }
-  // }
-
-  // // TODO: iterator?
-  // for (int i = 0; i < edgesToBeDone.size(); i++) {
-  // if (i == edgesToBeDone.size() - 1) {
-  // this.nodeConnections.replace(edgesToBeDone.get(i), edgesValueSum);
-  // // TODO: change also the other node
-  // } else {
-  // int randomEdgeValue = RandomDraws.drawInteger(-5, 5);
-  // this.nodeConnections.replace(edgesToBeDone.get(i), randomEdgeValue);
-  // edgesValueSum += randomEdgeValue;
-  // // TODO: change also the other node
-  // }
-  // }
-  // }
-
-  @Override
-  public int hashCode() {
-    return this.name.hashCode();
   }
 
   @Override

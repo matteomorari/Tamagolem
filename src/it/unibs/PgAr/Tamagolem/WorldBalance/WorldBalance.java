@@ -9,18 +9,19 @@ import java.util.Map;
 import it.kibo.fp.lib.RandomDraws;
 import it.unibs.PgAr.Tamagolem.MyMath;
 
+// TODO: sup(W) = V
 public class WorldBalance {
   private static final int MAX = 4;
   private static final int MIN = -4;
   private HashMap<String, Node> worldBalance;
   private ArrayList<String> elementListName = new ArrayList<>();
-  private int numberOfElements;
+  private int numberOfElementsChosen;
 
   public WorldBalance(int numberOfElements) {
     if (numberOfElements < 3 || numberOfElements > 10) {
-      throw new InvalidParameterException("The number of nods must be at least 3 and no more than 10");
+      throw new InvalidParameterException("The number of nodes must be at least 3 and no more than 10");
     }
-    this.numberOfElements = numberOfElements;
+    this.numberOfElementsChosen = numberOfElements;
     this.worldBalance = new HashMap<>();
     this.createElementListName();
     this.createWorldBalance();
@@ -41,7 +42,7 @@ public class WorldBalance {
 
   private void createWorldBalance() {
     // create each node
-    for (int i = 0; i < this.numberOfElements; i++) {
+    for (int i = 0; i < this.numberOfElementsChosen; i++) {
       int randomNumber = RandomDraws.drawInteger(0, this.elementListName.size() - 1);
       String newNodeName = this.elementListName.get(randomNumber);
       Node newNode = new Node(newNodeName);
@@ -49,12 +50,12 @@ public class WorldBalance {
       this.elementListName.remove(randomNumber);
     }
 
-    // TODO: Map.Entry or just Entry?
-    // create empty edges for each node with each node with value zero
+    // For each node initializes the link to every other node with value zero
     for (Map.Entry<String, Node> startingNode : this.worldBalance.entrySet()) {
       for (Map.Entry<String, Node> arrivalNode : this.worldBalance.entrySet()) {
         startingNode.getValue().addNewEdge(arrivalNode.getKey(), 0);
-        // the node referred to its self must stay to zero
+        // the node referred to its self must stay to zero, so in the set the edges that
+        // will be update, we don't put the node itself
         if (startingNode.getKey() != arrivalNode.getKey()) {
           startingNode.getValue().addEdgesToBeDone(arrivalNode.getKey());
         }
@@ -63,7 +64,7 @@ public class WorldBalance {
 
     // after set all to zero lets generate random value for edges with condition
     // that each node has zero as sum of edges
-    int numberOfLeftNodes = this.numberOfElements;
+    int numberOfStartingNodesLeft = this.numberOfElementsChosen;
     for (Map.Entry<String, Node> startingNode : this.worldBalance.entrySet()) {
 
       Iterator<String> iteratorArrivingNodes = startingNode.getValue().getEdgesToBeDone().iterator();
@@ -72,12 +73,10 @@ public class WorldBalance {
         String arrivalNodeName = iteratorArrivingNodes.next();
         Node arrivalNode = this.worldBalance.get(arrivalNodeName);
         int randomEdgeValue;
-        if (numberOfLeftNodes > 3) {
+        if (numberOfStartingNodesLeft > 3) {
           // we check that the penultimate edge is not already a total sum of zero because
           // otherwise, given that the last edge cannot be zero, the final sum of all the
           // edges of a node cannot be zero
-          // TODO: dobbiamo controllare anche quello di arrivo ma l'importante che non sia
-          // l'ultimo di partenza
           if (startingNode.getValue().getEdgesToBeDone().size() == 2) {
             int numberToAvoid = startingNode.getValue().getEdgesValueSum() * -1;
             randomEdgeValue = MyMath.drawIntegerWithExclusion(MIN, MAX, 0, numberToAvoid);
@@ -98,7 +97,8 @@ public class WorldBalance {
           arrivalNode.removeEdgesToBeDone(startingNode.getKey());
         }
 
-        if (numberOfLeftNodes == 3) {
+        // at the third last node, we manually get the next two nodes
+        if (numberOfStartingNodesLeft == 3) {
           String thirdLastNode = startingNode.getKey();
           String secondLastNode = arrivalNodeName;
           iteratorArrivingNodes.remove();
@@ -148,7 +148,7 @@ public class WorldBalance {
         }
       }
 
-      numberOfLeftNodes--;
+      numberOfStartingNodesLeft--;
     }
   }
 

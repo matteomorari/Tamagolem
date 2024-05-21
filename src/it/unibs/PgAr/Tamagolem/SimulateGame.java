@@ -4,23 +4,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import it.kibo.fp.lib.AnsiColors;
 import it.kibo.fp.lib.InputData;
 import it.kibo.fp.lib.Menu;
 import it.unibs.PgAr.Tamagolem.WorldBalance.Node;
 import it.unibs.PgAr.Tamagolem.WorldBalance.WorldBalance;
 
-// TODO! what if the sequence of stones of two tama is the same?
-
 public class SimulateGame {
+  private static final String MESSAGE_MENU = "Choose an element (%d/%d)";
+  private static final String MESSAGE_NEW_TAMA = AnsiColors.GREEN + "%s, you have to evoke a new tamaGolem! (%d/%d)"+ AnsiColors.RESET;
+  private static final String MESSAGE_TAMA_DIED = AnsiColors.RED + "%s, your tamaGolem has dead."+ AnsiColors.RESET;
+  private static final String MESSAGE_GAME_LOST = AnsiColors.RED + "%s has lost the game."+ AnsiColors.RESET;
+  private static final String MESSAGE_CREATE_SECOND_PLAYER = AnsiColors.GREEN + "Hi player 2, what's you name? "+ AnsiColors.RESET;
+  private static final String MESSAGE_CREATE_FIRST_PLAYER = AnsiColors.GREEN + "Hi player 1, what's you name? "+ AnsiColors.RESET;
+  private static final String MESSAGE_NEW_GAME = AnsiColors.GREEN + "Do you want to play again? "+ AnsiColors.RESET;
   private static HashMap<String, Node> worldBalanceMap;
-  private static int numberOfElements = 5; // N
+  private static int numberOfElements = 9; // N
   private static int stonesPerTamaGolem; // P
   private static int tamaGolemPerPlayer; // G
   private static int reserveStones; // S //TODO: useless?
   private static int stonesPerElement;
+  private static final int tamaGolemLife = 10; // V
   // TODO: because of there isn't a construcctor, is good put hear the
   // initializer? @ask
-  private static final int tamaGolemLife = 10; // V
   private static HashMap<String, Integer> stonesAvailable = new HashMap<>();
   private static Player player1;
   private static Player player2;
@@ -37,7 +43,7 @@ public class SimulateGame {
       initializationStonesAvailable();
       newGame();
       System.out.println(worldBalance.toString());
-      newGame = InputData.readYesOrNo("Do you want to play again?"); // TODO: refactoring
+      newGame = InputData.readYesOrNo(MESSAGE_NEW_GAME);
     } while (newGame);
   }
 
@@ -50,9 +56,9 @@ public class SimulateGame {
   }
 
   private static void createPlayers() {
-    String name1 = InputData.readNonEmptyString("Hi player 1, what's you name? ", false); // TODO: refactoring
+    String name1 = InputData.readNonEmptyString(MESSAGE_CREATE_FIRST_PLAYER, false);
     player1 = new Player(name1, tamaGolemPerPlayer);
-    String name2 = InputData.readNonEmptyString("Hi player 2, what's you name? ", false); // TODO: refactoring
+    String name2 = InputData.readNonEmptyString(MESSAGE_CREATE_SECOND_PLAYER, false);
     player2 = new Player(name2, tamaGolemPerPlayer);
   }
 
@@ -60,7 +66,6 @@ public class SimulateGame {
     for (String elementName : worldBalanceMap.keySet()) {
       stonesAvailable.put(elementName, stonesPerElement);
     }
-
   }
 
   private static void newGame() {
@@ -75,10 +80,10 @@ public class SimulateGame {
       // first check if any player has finished his tamaGolem
       if (player1.tamaGolemFinished()) {
         player1Alive = false;
-        System.out.println("Player1 has lost the game."); // TODO: refactoring
+        System.out.println(String.format(MESSAGE_GAME_LOST, player1.getName()));
       } else if (player2.tamaGolemFinished()) {
         player1Alive = false;
-        System.out.println("Player1 has lost the game."); // TODO: refactoring
+        System.out.println(String.format(MESSAGE_GAME_LOST, player2.getName()));
       } else {
         // if no player has lost, let's look for the player whose last tamaGolem died
         if (player1.getTamaGolem().isDead()) {
@@ -92,7 +97,7 @@ public class SimulateGame {
   }
 
   private static void tamaGolemEvocation(Player player) {
-    System.out.println(player.getName() + ", you have to evoke a new tamaGolem!"); // TODO: refactoring (turn green)
+    System.out.println(String.format(MESSAGE_NEW_TAMA, player.getName(), player.getTamaGolemUsed() + 1, player.getTotalTamaGolemUsable()));
 
     ArrayList<String> tamaGolemStones = new ArrayList<String>();
     // display and choose element
@@ -108,7 +113,7 @@ public class SimulateGame {
       String[] arrayOptsMenu = new String[menuOptions.size()];
       arrayOptsMenu = menuOptions.toArray(arrayOptsMenu); // TODO: better way @ask
       // display menu
-      Menu menu = new Menu("Choose an element", arrayOptsMenu, false, false, false);
+      Menu menu = new Menu(String.format(MESSAGE_MENU, i + 1, stonesPerTamaGolem), arrayOptsMenu, false, false, false);
       int numElementChosen = menu.choose();
       // extraction element name from the string
       String nameElementChosen = menuOptions.get(numElementChosen - 1).split(":")[0];
@@ -116,6 +121,7 @@ public class SimulateGame {
       stonesAvailable.compute(nameElementChosen, (k, v) -> v - 1);
       tamaGolemStones.add(nameElementChosen);
     }
+    System.out.println();
     TamaGolem newTamaGolem = new TamaGolem(tamaGolemLife, tamaGolemStones);
     player.setTamaGolem(newTamaGolem);
   }
@@ -123,6 +129,9 @@ public class SimulateGame {
   private static void startTamaGolemFight() {
     TamaGolem tamaGolemPlayer1 = player1.getTamaGolem();
     TamaGolem tamaGolemPlayer2 = player2.getTamaGolem();
+    // TODO!: what to do in this case? @ask
+    int hasCode1 = player1.getTamaGolem().getStonesAvailableHashCode();
+    int hasCode2 = player2.getTamaGolem().getStonesAvailableHashCode();
     while (!tamaGolemPlayer1.isDead() && !tamaGolemPlayer2.isDead()) {
       String stone1 = tamaGolemPlayer1.executeAttack();
       String stone2 = tamaGolemPlayer2.executeAttack();
@@ -135,10 +144,11 @@ public class SimulateGame {
     }
 
     if (player1.getTamaGolem().isDead()) {
-      System.out.println("Player1, your tamaGolem has dead.");
+      System.out.println(String.format(MESSAGE_TAMA_DIED, player1.getName()));
     }
     if (player2.getTamaGolem().isDead()) {
-      System.out.println("Player2, your tamaGolem has dead.");
+      System.out.println(String.format(MESSAGE_TAMA_DIED, player2.getName()));
     }
+    System.out.println();
   }
 }

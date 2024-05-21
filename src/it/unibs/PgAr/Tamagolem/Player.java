@@ -33,7 +33,10 @@ public class Player {
     if (this.tamaGolemUsed == this.totalTamaGolemUsable) {
       return true;
     }
-
     return false;
+  }
+
+  public int getTamaGolemUsed() {
+    return tamaGolemUsed;
   }
 }
