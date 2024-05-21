@@ -20,7 +20,7 @@ public class SimulateGame {
   private static final String MESSAGE_NEW_TAMA = AnsiColors.GREEN + "%s, you have to evoke a new tamaGolem! (%d/%d)"
       + AnsiColors.RESET;
   private static final String MESSAGE_TAMA_DIED = AnsiColors.RED + "%s, your tamaGolem has dead." + AnsiColors.RESET;
-  private static final String MESSAGE_GAME_LOST = AnsiColors.RED + "%s has lost the game.\n" + AnsiColors.RESET;
+  private static final String MESSAGE_GAME_WIN = AnsiColors.GREEN + "%s has win the game.\n" + AnsiColors.RESET;
   private static final String MESSAGE_CREATE_SECOND_PLAYER = AnsiColors.GREEN + "Hi player 2, what's you name? "
       + AnsiColors.RESET;
   private static final String MESSAGE_CREATE_FIRST_PLAYER = AnsiColors.GREEN + "\nHi player 1, what's you name? "
@@ -108,12 +108,12 @@ public class SimulateGame {
       startTamaGolemFight();
 
       // first check if any player has finished his tamaGolem
-      if (player1.tamaGolemFinished()) {
+      if (player1.tamaGolemFinished() && player1.getTamaGolem().isDead()) {
         player1Alive = false;
-        System.out.println(String.format(MESSAGE_GAME_LOST, player1.getName()));
-      } else if (player2.tamaGolemFinished()) {
-        player1Alive = false;
-        System.out.println(String.format(MESSAGE_GAME_LOST, player2.getName()));
+        System.out.println(String.format(MESSAGE_GAME_WIN, player2.getName()));
+      } else if (player2.tamaGolemFinished() && player2.getTamaGolem().isDead()) {
+        player2Alive = false;
+        System.out.println(String.format(MESSAGE_GAME_WIN, player1.getName()));
       } else {
         // if no player has lost, let's look for the player whose last tamaGolem died
         if (player1.getTamaGolem().isDead()) {
