@@ -8,6 +8,8 @@ import it.kibo.fp.lib.RandomDraws;
 
 public final class MyMath {
 
+  private static final String MESSAGE_ERROR_NUMBERS_END = "All numbers in the range are excluded.";
+
   /**
    * Generates a random integer within a specified range, excluding certain numbers.
    *
@@ -28,7 +30,7 @@ public final class MyMath {
       }
     }
     if (listNumberExtractable.size() == 0) {
-      throw new IllegalArgumentException("All numbers in the range are excluded.");
+      throw new IllegalArgumentException(MESSAGE_ERROR_NUMBERS_END);
     }
 
     randomEdgeValue = RandomDraws.drawInteger(0, listNumberExtractable.size() - 1);

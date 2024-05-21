@@ -9,8 +9,8 @@ import java.util.Map;
 import it.kibo.fp.lib.RandomDraws;
 import it.unibs.PgAr.Tamagolem.MyMath;
 
-// TODO: sup(W) = V
 public class WorldBalance {
+  private static final String MESSAGE_ERROR_CONSTRUCTOR = "The number of nodes must be at least 3 and no more than 10";
   private static final int MAX = 4;
   private static final int MIN = -4;
   private HashMap<String, Node> worldBalance;
@@ -20,7 +20,7 @@ public class WorldBalance {
 
   public WorldBalance(int numberOfElements) {
     if (numberOfElements < 3 || numberOfElements > 10) {
-      throw new InvalidParameterException("The number of nodes must be at least 3 and no more than 10");
+      throw new InvalidParameterException(MESSAGE_ERROR_CONSTRUCTOR);
     }
     this.supremum = 0;
     this.numberOfElementsChosen = numberOfElements;

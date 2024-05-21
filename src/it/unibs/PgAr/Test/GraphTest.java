@@ -1,7 +1,10 @@
-package it.unibs.PgAr.Tamagolem.WorldBalance;
+package it.unibs.PgAr.Test;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+
+import it.unibs.PgAr.Tamagolem.WorldBalance.Node;
+import it.unibs.PgAr.Tamagolem.WorldBalance.WorldBalance;
 
 import java.util.Map;
 

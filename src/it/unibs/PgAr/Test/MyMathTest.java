@@ -1,7 +1,9 @@
-package it.unibs.PgAr.Tamagolem;
+package it.unibs.PgAr.Test;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+
+import it.unibs.PgAr.Tamagolem.MyMath;
 
 public class MyMathTest {
 

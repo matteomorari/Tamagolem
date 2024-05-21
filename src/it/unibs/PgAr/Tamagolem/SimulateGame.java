@@ -10,12 +10,13 @@ import it.kibo.fp.lib.Menu;
 import it.unibs.PgAr.Tamagolem.WorldBalance.WorldBalance;
 
 public class SimulateGame {
+  private static final String MENU_TITLE_DIFFICULTY = "Choose the difficulty of the game";
   private static final String MESSAGE_TAMAGOLEM_EQUALS = AnsiColors.YELLOW
       + "You have created a tamaGolem with the same sequence of stones than the other tamaGolem. You have to recreate it."
       + AnsiColors.RESET;
   private static final String MESSAGE_INTERACTION_STONES = "-> %s Vs %s: win %s";
   private static final String MESSAGE_INTERACTION_STONES_TIE = "-> %s Vs %s: tie";
-  private static final String MESSAGE_MENU = "Choose an element (%d/%d)";
+  private static final String MENU_CHOOSE_ELEMENT = "Choose an element (%d/%d)";
   private static final String MESSAGE_NEW_TAMA = AnsiColors.GREEN + "%s, you have to evoke a new tamaGolem! (%d/%d)"
       + AnsiColors.RESET;
   private static final String MESSAGE_TAMA_DIED = AnsiColors.RED + "%s, your tamaGolem has dead." + AnsiColors.RESET;
@@ -25,6 +26,9 @@ public class SimulateGame {
   private static final String MESSAGE_CREATE_FIRST_PLAYER = AnsiColors.GREEN + "\nHi player 1, what's you name? "
       + AnsiColors.RESET;
   private static final String MESSAGE_NEW_GAME = AnsiColors.GREEN + "Do you want to play again? " + AnsiColors.RESET;
+  private static final String[] MENU_DIFFICULTY_OPTIONS = {
+      "Easy", "Medium", "Hard", "Extreme", "Impossible"
+  };
 
   private static int numberOfElements; // N
   private static int stonesPerTamaGolem; // P
@@ -51,10 +55,7 @@ public class SimulateGame {
   }
 
   public static void chooseDifficulty() {
-    String[] menuOptions = {
-        "Easy", "Medium", "Hard", "Extreme", "Impossible"
-    };
-    Menu menuDifficulty = new Menu("Choose the difficulty of the game", menuOptions, false, false, false);
+    Menu menuDifficulty = new Menu(MENU_TITLE_DIFFICULTY, MENU_DIFFICULTY_OPTIONS, false, false, false);
     int difficulty = menuDifficulty.choose();
     switch (difficulty) {
       case 1:
@@ -143,7 +144,7 @@ public class SimulateGame {
       String[] arrayOptsMenu = new String[menuOptions.size()];
       arrayOptsMenu = menuOptions.toArray(arrayOptsMenu);
       // display menu
-      Menu menu = new Menu(String.format(MESSAGE_MENU, i + 1, stonesPerTamaGolem), arrayOptsMenu, false, false, false);
+      Menu menu = new Menu(String.format(MENU_CHOOSE_ELEMENT, i + 1, stonesPerTamaGolem), arrayOptsMenu, false, false, false);
       int numElementChosen = menu.choose();
       // extraction element name from the string
       String nameElementChosen = menuOptions.get(numElementChosen - 1).split(":")[0];
