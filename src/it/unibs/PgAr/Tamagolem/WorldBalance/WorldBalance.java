@@ -158,7 +158,7 @@ public class WorldBalance {
     }
   }
 
-  private void updateSupremum(int value){
+  private void updateSupremum(int value) {
     if (Math.abs(value) > this.supremum) {
       this.supremum = value;
     }
@@ -177,11 +177,20 @@ public class WorldBalance {
   // starting node and the columns are the arrival node
   @Override
   public String toString() {
-    StringBuffer stringToReturn = new StringBuffer();
+    StringBuffer stringToReturn = new StringBuffer("\t");
     for (Map.Entry<String, Node> startingNode : this.worldBalance.entrySet()) {
-      stringToReturn.append(startingNode.getValue().toString());
+      stringToReturn.append(startingNode.getKey() + "\t");
+    }
+
+    stringToReturn.append("\n");
+    for (Map.Entry<String, Node> startingNode : this.worldBalance.entrySet()) {
+      stringToReturn.append(startingNode.getKey() + "\t");
+      for (Map.Entry<String, Integer> arrivalNode : startingNode.getValue().getNodeConnections().entrySet()) {
+        stringToReturn.append(arrivalNode.getValue() + "\t");
+      }
       stringToReturn.append("\n");
     }
+
     return stringToReturn.toString();
   }
 }

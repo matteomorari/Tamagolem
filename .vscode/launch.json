@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "TamagolemApp",
+      "request": "launch",
+      "mainClass": "it.unibs.PgAr.Tamagolem.TamagolemApp",
+      "projectName": "TamaGolem_d9415470"
+    },
+    {
+      "type": "java",
       "name": "Current File",
       "request": "launch",
       "mainClass": "${file}"

@@ -35,7 +35,7 @@ public class Node {
     return this.edgesToBeDone;
   }
 
-  public Map<String, Integer> getNodeConnections() {
+  public HashMap<String, Integer> getNodeConnections() {
     return this.nodeConnections;
   }
 
