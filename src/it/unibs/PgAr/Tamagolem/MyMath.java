@@ -2,7 +2,6 @@ package it.unibs.PgAr.Tamagolem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import it.kibo.fp.lib.RandomDraws;

@@ -22,7 +22,12 @@ public class Player {
 
   public void setTamaGolem(TamaGolem newTamaGolem) {
     this.tamaGolem = newTamaGolem;
-    tamaGolemUsed++;
+    this.tamaGolemUsed++;
+  }
+
+  public void removeTamaGolem() {
+    this.tamaGolem = null;
+    this.tamaGolemUsed--;
   }
 
   public int getTotalTamaGolemUsable() {

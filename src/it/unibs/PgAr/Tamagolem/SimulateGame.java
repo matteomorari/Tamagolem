@@ -11,21 +11,25 @@ import it.unibs.PgAr.Tamagolem.WorldBalance.Node;
 import it.unibs.PgAr.Tamagolem.WorldBalance.WorldBalance;
 
 public class SimulateGame {
+  private static final String MESSAGE_INTERACTION_STONES = "-> %s Vs %s: win %s";
   private static final String MESSAGE_MENU = "Choose an element (%d/%d)";
-  private static final String MESSAGE_NEW_TAMA = AnsiColors.GREEN + "%s, you have to evoke a new tamaGolem! (%d/%d)"+ AnsiColors.RESET;
-  private static final String MESSAGE_TAMA_DIED = AnsiColors.RED + "%s, your tamaGolem has dead."+ AnsiColors.RESET;
-  private static final String MESSAGE_GAME_LOST = AnsiColors.RED + "%s has lost the game."+ AnsiColors.RESET;
-  private static final String MESSAGE_CREATE_SECOND_PLAYER = AnsiColors.GREEN + "Hi player 2, what's you name? "+ AnsiColors.RESET;
-  private static final String MESSAGE_CREATE_FIRST_PLAYER = AnsiColors.GREEN + "Hi player 1, what's you name? "+ AnsiColors.RESET;
-  private static final String MESSAGE_NEW_GAME = AnsiColors.GREEN + "Do you want to play again? "+ AnsiColors.RESET;
+  private static final String MESSAGE_NEW_TAMA = AnsiColors.GREEN + "%s, you have to evoke a new tamaGolem! (%d/%d)"
+      + AnsiColors.RESET;
+  private static final String MESSAGE_TAMA_DIED = AnsiColors.RED + "%s, your tamaGolem has dead." + AnsiColors.RESET;
+  private static final String MESSAGE_GAME_LOST = AnsiColors.RED + "%s has lost the game." + AnsiColors.RESET;
+  private static final String MESSAGE_CREATE_SECOND_PLAYER = AnsiColors.GREEN + "Hi player 2, what's you name? "
+      + AnsiColors.RESET;
+  private static final String MESSAGE_CREATE_FIRST_PLAYER = AnsiColors.GREEN + "Hi player 1, what's you name? "
+      + AnsiColors.RESET;
+  private static final String MESSAGE_NEW_GAME = AnsiColors.GREEN + "Do you want to play again? " + AnsiColors.RESET;
   private static HashMap<String, Node> worldBalanceMap;
-  private static int numberOfElements = 9; // N
+  private static int numberOfElements = 5; // N
   private static int stonesPerTamaGolem; // P
   private static int tamaGolemPerPlayer; // G
-  private static int reserveStones; // S //TODO: useless?
+  private static int reserveStones; // S //TODO: useless? @ask
   private static int stonesPerElement;
   private static final int tamaGolemLife = 10; // V
-  // TODO: because of there isn't a construcctor, is good put hear the
+  // TODO: because of there isn't a constructor, is good put hear the
   // initializer? @ask
   private static HashMap<String, Integer> stonesAvailable = new HashMap<>();
   private static Player player1;
@@ -33,12 +37,12 @@ public class SimulateGame {
 
   public static void starSimulation() {
     // TODO: how to choose numberOfElements?
-    WorldBalance worldBalance = new WorldBalance(numberOfElements);
-    worldBalanceMap = worldBalance.getWorldBalance();
-    calculateParameters();
-    createPlayers();
     boolean newGame = true;
     do {
+      WorldBalance worldBalance = new WorldBalance(numberOfElements);
+      worldBalanceMap = worldBalance.getWorldBalance();
+      calculateParameters();
+      createPlayers();
       System.out.println();
       initializationStonesAvailable();
       newGame();
@@ -97,7 +101,8 @@ public class SimulateGame {
   }
 
   private static void tamaGolemEvocation(Player player) {
-    System.out.println(String.format(MESSAGE_NEW_TAMA, player.getName(), player.getTamaGolemUsed() + 1, player.getTotalTamaGolemUsable()));
+    System.out.println(String.format(MESSAGE_NEW_TAMA, player.getName(), player.getTamaGolemUsed() + 1,
+        player.getTotalTamaGolemUsable()));
 
     ArrayList<String> tamaGolemStones = new ArrayList<String>();
     // display and choose element
@@ -124,23 +129,37 @@ public class SimulateGame {
     System.out.println();
     TamaGolem newTamaGolem = new TamaGolem(tamaGolemLife, tamaGolemStones);
     player.setTamaGolem(newTamaGolem);
+
+    try {
+      int hasCode1 = player1.getTamaGolem().getStonesAvailableHashCode();
+      int hasCode2 = player2.getTamaGolem().getStonesAvailableHashCode();
+      if (hasCode1 == hasCode2) {
+        System.out.println(
+            "You have created a tamaGolem with the same sequence of stones than the other tamaGolem. You have to recreate it.");
+        player.removeTamaGolem();
+        tamaGolemEvocation(player);
+      }
+    } catch (NullPointerException e) {
+    }
   }
 
   private static void startTamaGolemFight() {
     TamaGolem tamaGolemPlayer1 = player1.getTamaGolem();
     TamaGolem tamaGolemPlayer2 = player2.getTamaGolem();
-    // TODO!: what to do in this case? @ask
-    int hasCode1 = player1.getTamaGolem().getStonesAvailableHashCode();
-    int hasCode2 = player2.getTamaGolem().getStonesAvailableHashCode();
     while (!tamaGolemPlayer1.isDead() && !tamaGolemPlayer2.isDead()) {
       String stone1 = tamaGolemPlayer1.executeAttack();
       String stone2 = tamaGolemPlayer2.executeAttack();
+      // refers to stone1
       int valueInteractionElements = worldBalanceMap.get(stone1).getConnectionValueForNode(stone2);
+      String strongerElement;
       if (valueInteractionElements < 0) {
         tamaGolemPlayer1.reduceLife(valueInteractionElements);
+        strongerElement = stone2;
       } else {
         tamaGolemPlayer2.reduceLife(valueInteractionElements * -1);
+        strongerElement = stone1;
       }
+      System.out.println(String.format(MESSAGE_INTERACTION_STONES, stone1, stone2, strongerElement));
     }
 
     if (player1.getTamaGolem().isDead()) {
