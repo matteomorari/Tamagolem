@@ -16,11 +16,13 @@ public class WorldBalance {
   private HashMap<String, Node> worldBalance;
   private ArrayList<String> elementListName = new ArrayList<>();
   private int numberOfElementsChosen;
+  private int supremum;
 
   public WorldBalance(int numberOfElements) {
     if (numberOfElements < 3 || numberOfElements > 10) {
       throw new InvalidParameterException("The number of nodes must be at least 3 and no more than 10");
     }
+    this.supremum = 0;
     this.numberOfElementsChosen = numberOfElements;
     this.worldBalance = new HashMap<>();
     this.createElementListName();
@@ -95,6 +97,7 @@ public class WorldBalance {
           // startingNode and arrivalNode
           iteratorArrivingNodes.remove();
           arrivalNode.removeEdgesToBeDone(startingNode.getKey());
+          this.updateSupremum(randomEdgeValue);
         }
 
         // at the third last node, we manually get the next two nodes
@@ -130,18 +133,21 @@ public class WorldBalance {
           // update
           this.worldBalance.get(thirdLastNode).updateEdgeValue(secondLastNode, valueSecondLastEdgeThirdLastNode);
           this.worldBalance.get(secondLastNode).updateEdgeValue(thirdLastNode, valueSecondLastEdgeThirdLastNode * -1);
+          this.updateSupremum(valueSecondLastEdgeThirdLastNode);
           // remove
           this.worldBalance.get(secondLastNode).removeEdgesToBeDone(thirdLastNode);
 
           // update
           this.worldBalance.get(thirdLastNode).updateEdgeValue(lastNode, valueLastEdgeThirdLastNode);
           this.worldBalance.get(lastNode).updateEdgeValue(thirdLastNode, valueLastEdgeThirdLastNode * -1);
+          this.updateSupremum(valueLastEdgeThirdLastNode);
           // remove
           this.worldBalance.get(lastNode).removeEdgesToBeDone(thirdLastNode);
 
           // update
           this.worldBalance.get(secondLastNode).updateEdgeValue(lastNode, valueLastEdgeSecondLastNode);
           this.worldBalance.get(lastNode).updateEdgeValue(secondLastNode, valueLastEdgeSecondLastNode * -1);
+          this.updateSupremum(valueLastEdgeSecondLastNode);
           // remove
           this.worldBalance.get(lastNode).removeEdgesToBeDone(secondLastNode);
           this.worldBalance.get(secondLastNode).removeEdgesToBeDone(lastNode);
@@ -150,6 +156,16 @@ public class WorldBalance {
 
       numberOfStartingNodesLeft--;
     }
+  }
+
+  private void updateSupremum(int value){
+    if (Math.abs(value) > this.supremum) {
+      this.supremum = value;
+    }
+  }
+
+  public int getSupremum() {
+    return supremum;
   }
 
   public HashMap<String, Node> getWorldBalance() {

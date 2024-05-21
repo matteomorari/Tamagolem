@@ -7,7 +7,6 @@ import java.util.Map;
 import it.kibo.fp.lib.AnsiColors;
 import it.kibo.fp.lib.InputData;
 import it.kibo.fp.lib.Menu;
-import it.unibs.PgAr.Tamagolem.WorldBalance.Node;
 import it.unibs.PgAr.Tamagolem.WorldBalance.WorldBalance;
 
 public class SimulateGame {
@@ -23,25 +22,24 @@ public class SimulateGame {
   private static final String MESSAGE_GAME_LOST = AnsiColors.RED + "%s has lost the game.\n" + AnsiColors.RESET;
   private static final String MESSAGE_CREATE_SECOND_PLAYER = AnsiColors.GREEN + "Hi player 2, what's you name? "
       + AnsiColors.RESET;
-  private static final String MESSAGE_CREATE_FIRST_PLAYER = AnsiColors.GREEN + "Hi player 1, what's you name? "
+  private static final String MESSAGE_CREATE_FIRST_PLAYER = AnsiColors.GREEN + "\nHi player 1, what's you name? "
       + AnsiColors.RESET;
   private static final String MESSAGE_NEW_GAME = AnsiColors.GREEN + "Do you want to play again? " + AnsiColors.RESET;
-  private static HashMap<String, Node> worldBalanceMap;
-  private static int numberOfElements = 4; // N
+
+  private static int numberOfElements; // N
   private static int stonesPerTamaGolem; // P
   private static int tamaGolemPerPlayer; // G
   private static int stonesPerElement;
-  private static final int tamaGolemLife = 10; // V
-  private static HashMap<String, Integer> stonesAvailable = new HashMap<String, Integer>();
+  private static WorldBalance worldBalance;
+  private static HashMap<String, Integer> stonesAvailable;
   private static Player player1;
   private static Player player2;
 
   public static void starSimulation() {
-    // TODO: how to choose numberOfElements?
     boolean newGame = true;
     do {
-      WorldBalance worldBalance = new WorldBalance(numberOfElements);
-      worldBalanceMap = worldBalance.getWorldBalance();
+      chooseDifficulty();
+      worldBalance = new WorldBalance(numberOfElements);
       calculateParameters();
       createPlayers();
       System.out.println();
@@ -50,6 +48,33 @@ public class SimulateGame {
       System.out.println(worldBalance.toString());
       newGame = InputData.readYesOrNo(MESSAGE_NEW_GAME);
     } while (newGame);
+  }
+
+  public static void chooseDifficulty() {
+    String[] menuOptions = {
+        "Easy", "Medium", "Hard", "Extreme", "Impossible"
+    };
+    Menu menuDifficulty = new Menu("Choose the difficulty of the game", menuOptions, false, false, false);
+    int difficulty = menuDifficulty.choose();
+    switch (difficulty) {
+      case 1:
+        numberOfElements = 4;
+        break;
+      case 2:
+        numberOfElements = 6;
+        break;
+      case 3:
+        numberOfElements = 8;
+        break;
+      case 4:
+        numberOfElements = 9;
+        break;
+      case 5:
+        numberOfElements = 10;
+        break;
+      default:
+        break;
+    }
   }
 
   public static void calculateParameters() {
@@ -67,7 +92,7 @@ public class SimulateGame {
 
   private static void initializationStonesAvailable() {
     stonesAvailable = new HashMap<String, Integer>();
-    for (String elementName : worldBalanceMap.keySet()) {
+    for (String elementName : worldBalance.getWorldBalance().keySet()) {
       stonesAvailable.put(elementName, stonesPerElement);
     }
   }
@@ -127,10 +152,12 @@ public class SimulateGame {
       tamaGolemStones.add(nameElementChosen);
     }
     System.out.println();
-    TamaGolem newTamaGolem = new TamaGolem(tamaGolemLife, tamaGolemStones);
+    TamaGolem newTamaGolem = new TamaGolem(worldBalance.getSupremum(), tamaGolemStones);
     player.setTamaGolem(newTamaGolem);
 
-    try {
+    // when the first tama of the first player is created, the tama of the second
+    // player hasn't been created yet
+    if (player2.getTamaGolem() != null) {
       int hasCode1 = player1.getTamaGolem().getStonesAvailableHashCode();
       int hasCode2 = player2.getTamaGolem().getStonesAvailableHashCode();
       if (hasCode1 == hasCode2) {
@@ -143,7 +170,6 @@ public class SimulateGame {
         player.removeTamaGolem();
         tamaGolemEvocation(player);
       }
-    } catch (NullPointerException e) {
     }
   }
 
@@ -154,7 +180,7 @@ public class SimulateGame {
       String stone1 = tamaGolemPlayer1.executeAttack();
       String stone2 = tamaGolemPlayer2.executeAttack();
       // refers to stone1
-      int valueInteractionElements = worldBalanceMap.get(stone1).getConnectionValueForNode(stone2);
+      int valueInteractionElements = worldBalance.getWorldBalance().get(stone1).getConnectionValueForNode(stone2);
       String strongerElement;
       if (valueInteractionElements < 0) {
         tamaGolemPlayer1.reduceLife(valueInteractionElements);
