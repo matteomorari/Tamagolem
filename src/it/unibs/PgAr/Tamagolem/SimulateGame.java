@@ -11,27 +11,28 @@ import it.unibs.PgAr.Tamagolem.WorldBalance.Node;
 import it.unibs.PgAr.Tamagolem.WorldBalance.WorldBalance;
 
 public class SimulateGame {
+  private static final String MESSAGE_TAMAGOLEM_EQUALS = AnsiColors.YELLOW
+      + "You have created a tamaGolem with the same sequence of stones than the other tamaGolem. You have to recreate it."
+      + AnsiColors.RESET;
   private static final String MESSAGE_INTERACTION_STONES = "-> %s Vs %s: win %s";
+  private static final String MESSAGE_INTERACTION_STONES_TIE = "-> %s Vs %s: tie";
   private static final String MESSAGE_MENU = "Choose an element (%d/%d)";
   private static final String MESSAGE_NEW_TAMA = AnsiColors.GREEN + "%s, you have to evoke a new tamaGolem! (%d/%d)"
       + AnsiColors.RESET;
   private static final String MESSAGE_TAMA_DIED = AnsiColors.RED + "%s, your tamaGolem has dead." + AnsiColors.RESET;
-  private static final String MESSAGE_GAME_LOST = AnsiColors.RED + "%s has lost the game." + AnsiColors.RESET;
+  private static final String MESSAGE_GAME_LOST = AnsiColors.RED + "%s has lost the game.\n" + AnsiColors.RESET;
   private static final String MESSAGE_CREATE_SECOND_PLAYER = AnsiColors.GREEN + "Hi player 2, what's you name? "
       + AnsiColors.RESET;
   private static final String MESSAGE_CREATE_FIRST_PLAYER = AnsiColors.GREEN + "Hi player 1, what's you name? "
       + AnsiColors.RESET;
   private static final String MESSAGE_NEW_GAME = AnsiColors.GREEN + "Do you want to play again? " + AnsiColors.RESET;
   private static HashMap<String, Node> worldBalanceMap;
-  private static int numberOfElements = 5; // N
+  private static int numberOfElements = 4; // N
   private static int stonesPerTamaGolem; // P
   private static int tamaGolemPerPlayer; // G
-  private static int reserveStones; // S //TODO: useless? @ask
   private static int stonesPerElement;
   private static final int tamaGolemLife = 10; // V
-  // TODO: because of there isn't a constructor, is good put hear the
-  // initializer? @ask
-  private static HashMap<String, Integer> stonesAvailable = new HashMap<>();
+  private static HashMap<String, Integer> stonesAvailable = new HashMap<String, Integer>();
   private static Player player1;
   private static Player player2;
 
@@ -54,8 +55,6 @@ public class SimulateGame {
   public static void calculateParameters() {
     stonesPerTamaGolem = (int) Math.ceil((numberOfElements + 1) / 3.0) + 1;
     tamaGolemPerPlayer = (int) Math.ceil((numberOfElements - 1) * (numberOfElements - 2) / (stonesPerTamaGolem * 2.0));
-    reserveStones = (int) Math.ceil((2.0 * tamaGolemPerPlayer * stonesPerTamaGolem) / numberOfElements)
-        * numberOfElements;
     stonesPerElement = (int) Math.ceil((2.0 * tamaGolemPerPlayer * stonesPerTamaGolem) / numberOfElements);
   }
 
@@ -67,6 +66,7 @@ public class SimulateGame {
   }
 
   private static void initializationStonesAvailable() {
+    stonesAvailable = new HashMap<String, Integer>();
     for (String elementName : worldBalanceMap.keySet()) {
       stonesAvailable.put(elementName, stonesPerElement);
     }
@@ -116,7 +116,7 @@ public class SimulateGame {
       }
       // convert from ArrayList to simple array
       String[] arrayOptsMenu = new String[menuOptions.size()];
-      arrayOptsMenu = menuOptions.toArray(arrayOptsMenu); // TODO: better way @ask
+      arrayOptsMenu = menuOptions.toArray(arrayOptsMenu);
       // display menu
       Menu menu = new Menu(String.format(MESSAGE_MENU, i + 1, stonesPerTamaGolem), arrayOptsMenu, false, false, false);
       int numElementChosen = menu.choose();
@@ -134,8 +134,12 @@ public class SimulateGame {
       int hasCode1 = player1.getTamaGolem().getStonesAvailableHashCode();
       int hasCode2 = player2.getTamaGolem().getStonesAvailableHashCode();
       if (hasCode1 == hasCode2) {
+        // we need to add again the stone taken in the HashMap stonesAvailable
+        for (String stone : player.getTamaGolem().getStonesAvailable()) {
+          stonesAvailable.compute(stone, (k, v) -> v + 1);
+        }
         System.out.println(
-            "You have created a tamaGolem with the same sequence of stones than the other tamaGolem. You have to recreate it.");
+            MESSAGE_TAMAGOLEM_EQUALS);
         player.removeTamaGolem();
         tamaGolemEvocation(player);
       }
@@ -159,7 +163,11 @@ public class SimulateGame {
         tamaGolemPlayer2.reduceLife(valueInteractionElements * -1);
         strongerElement = stone1;
       }
-      System.out.println(String.format(MESSAGE_INTERACTION_STONES, stone1, stone2, strongerElement));
+      if (valueInteractionElements == 0) {
+        System.out.println(String.format(MESSAGE_INTERACTION_STONES_TIE, stone1, stone2));
+      } else {
+        System.out.println(String.format(MESSAGE_INTERACTION_STONES, stone1, stone2, strongerElement));
+      }
     }
 
     if (player1.getTamaGolem().isDead()) {
