@@ -10,6 +10,7 @@ import it.kibo.fp.lib.Menu;
 import it.unibs.PgAr.Tamagolem.WorldBalance.WorldBalance;
 
 public class SimulateGame {
+  private static final String ERROR_SAME_NAMES =AnsiColors.RED + "Error: same names, try with another one" + AnsiColors.RESET;
   private static final String MENU_TITLE_DIFFICULTY = "Choose the difficulty of the game";
   private static final String MESSAGE_TAMAGOLEM_EQUALS = AnsiColors.YELLOW
       + "You have created a tamaGolem with the same sequence of stones than the other tamaGolem. You have to recreate it."
@@ -86,8 +87,12 @@ public class SimulateGame {
 
   private static void createPlayers() {
     String name1 = InputData.readNonEmptyString(MESSAGE_CREATE_FIRST_PLAYER, false);
-    player1 = new Player(name1, tamaGolemPerPlayer);
     String name2 = InputData.readNonEmptyString(MESSAGE_CREATE_SECOND_PLAYER, false);
+    while(name1.equals(name2)){
+    System.out.println(ERROR_SAME_NAMES);
+    name2 = InputData.readNonEmptyString(MESSAGE_CREATE_SECOND_PLAYER, false);
+    }; //check different names
+    player1 = new Player(name1, tamaGolemPerPlayer);
     player2 = new Player(name2, tamaGolemPerPlayer);
   }
 
