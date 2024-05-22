@@ -10,6 +10,8 @@ import it.kibo.fp.lib.Menu;
 import it.unibs.PgAr.Tamagolem.WorldBalance.WorldBalance;
 
 public class SimulateGame {
+  private static final String MESSAGE_PRINT_WORLD_BALANCE = AnsiColors.GREEN + "THE BALANCE OF THE WORLD WAS"
+      + AnsiColors.RESET + " (to read from the row element to the column element):";
   private static final String ERROR_SAME_NAME = AnsiColors.RED + "Error: same names, try with another one"
       + AnsiColors.RESET;
   private static final String MENU_TITLE_DIFFICULTY = "Choose the difficulty of the game";
@@ -51,6 +53,7 @@ public class SimulateGame {
       System.out.println();
       initializationStonesAvailable();
       newGame();
+      System.out.println(MESSAGE_PRINT_WORLD_BALANCE);
       System.out.println(worldBalance.toString());
       newGame = InputData.readYesOrNo(MESSAGE_NEW_GAME);
     } while (newGame);

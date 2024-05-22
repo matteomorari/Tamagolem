@@ -32,7 +32,7 @@ public class WorldBalance {
   private void createElementListName() {
     this.elementListName.add("Bug");
     this.elementListName.add("Fire");
-    this.elementListName.add("Fighting");
+    this.elementListName.add("Ghost");
     this.elementListName.add("Water");
     this.elementListName.add("Dark");
     this.elementListName.add("Grass");
@@ -172,19 +172,18 @@ public class WorldBalance {
     return worldBalance;
   }
 
-  // TODO: to improve
   @Override
   public String toString() {
-    StringBuffer stringToReturn = new StringBuffer("\t");
+    StringBuffer stringToReturn = new StringBuffer(String.format("%-12s", ""));
     for (Map.Entry<String, Node> startingNode : this.worldBalance.entrySet()) {
-      stringToReturn.append(startingNode.getKey() + "\t");
+      stringToReturn.append(String.format("%-12s", startingNode.getKey()));
     }
 
     stringToReturn.append("\n");
     for (Map.Entry<String, Node> startingNode : this.worldBalance.entrySet()) {
-      stringToReturn.append(startingNode.getKey() + "\t");
+      stringToReturn.append(String.format("%-12s", startingNode.getKey()));
       for (Map.Entry<String, Integer> arrivalNode : startingNode.getValue().getNodeConnections().entrySet()) {
-        stringToReturn.append(arrivalNode.getValue() + "\t");
+        stringToReturn.append(String.format("%-12d", arrivalNode.getValue()));
       }
       stringToReturn.append("\n");
     }
