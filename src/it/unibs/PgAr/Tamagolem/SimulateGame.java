@@ -50,7 +50,7 @@ public class SimulateGame {
       createPlayers();
       System.out.println();
       initializationStonesAvailable();
-      // newGame();
+      newGame();
       System.out.println(worldBalance.toString());
       newGame = InputData.readYesOrNo(MESSAGE_NEW_GAME);
     } while (newGame);
