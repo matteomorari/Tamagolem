@@ -172,9 +172,7 @@ public class WorldBalance {
     return worldBalance;
   }
 
-  // TODO: create the toString @riki
-  // some suggestions (to follow ty): create a matrix where the rows are the
-  // starting node and the columns are the arrival node
+  // TODO: to improve
   @Override
   public String toString() {
     StringBuffer stringToReturn = new StringBuffer("\t");
