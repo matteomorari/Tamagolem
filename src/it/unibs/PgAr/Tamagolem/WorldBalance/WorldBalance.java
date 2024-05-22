@@ -9,6 +9,11 @@ import java.util.Map;
 import it.kibo.fp.lib.RandomDraws;
 import it.unibs.PgAr.Tamagolem.MyMath;
 
+/**
+ * The WorldBalance class represents the world balance in the Tamagolem game.
+ * It manages the creation and maintenance of the balance between different
+ * elements in the game world.
+ */
 public class WorldBalance {
   private static final String MESSAGE_ERROR_CONSTRUCTOR = "The number of nodes must be at least 3 and no more than 10";
   private static final int MAX = 4;
@@ -18,6 +23,13 @@ public class WorldBalance {
   private int numberOfElementsChosen;
   private int supremum;
 
+  /**
+   * Constructs a new WorldBalance object with the specified number of elements.
+   * 
+   * @param numberOfElements The number of elements to be chosen.
+   * @throws InvalidParameterException if the number of elements is less than 3 or
+   *                                   greater than 10.
+   */
   public WorldBalance(int numberOfElements) {
     if (numberOfElements < 3 || numberOfElements > 10) {
       throw new InvalidParameterException(MESSAGE_ERROR_CONSTRUCTOR);
@@ -29,6 +41,11 @@ public class WorldBalance {
     this.createWorldBalance();
   }
 
+  /**
+   * Adds the names of elements to the elementListName.
+   * The names of the elements are: Bug, Fire, Ghost, Water, Dark, Grass, Poison,
+   * Rock, Ice, and Dragon.
+   */
   private void createElementListName() {
     this.elementListName.add("Bug");
     this.elementListName.add("Fire");
@@ -164,14 +181,30 @@ public class WorldBalance {
     }
   }
 
+  /**
+   * Returns the supremum value.
+   *
+   * @return the supremum value
+   */
   public int getSupremum() {
     return supremum;
   }
 
+  /**
+   * Returns the world balance.
+   *
+   * @return the world balance as a HashMap of String and Node objects.
+   */
   public HashMap<String, Node> getWorldBalance() {
     return worldBalance;
   }
 
+  /**
+   * Returns a string representation of the WorldBalance object.
+   * The string includes the starting nodes and their connections.
+   *
+   * @return a string representation of the WorldBalance object
+   */
   @Override
   public String toString() {
     StringBuffer stringToReturn = new StringBuffer(String.format("%-12s", ""));

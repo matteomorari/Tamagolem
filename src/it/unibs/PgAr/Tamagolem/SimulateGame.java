@@ -9,7 +9,14 @@ import it.kibo.fp.lib.InputData;
 import it.kibo.fp.lib.Menu;
 import it.unibs.PgAr.Tamagolem.WorldBalance.WorldBalance;
 
+/**
+ * The `SimulateGame` class represents a simulation of the Tamagolem game.
+ * It allows players to create and battle with their own Tamagolems.
+ * The game includes options to choose the difficulty level and play multiple
+ * rounds.
+ */
 public class SimulateGame {
+  // Constants
   private static final String MESSAGE_PRINT_WORLD_BALANCE = AnsiColors.GREEN + "THE BALANCE OF THE WORLD WAS"
       + AnsiColors.RESET + " (to read from the row element to the column element):";
   private static final String ERROR_SAME_NAME = AnsiColors.RED + "Error: same names, try with another one"
@@ -34,6 +41,7 @@ public class SimulateGame {
       "Easy", "Medium", "Hard", "Extreme", "Impossible"
   };
 
+  // Game parameters
   private static int numberOfElements; // N
   private static int stonesPerTamaGolem; // P
   private static int tamaGolemPerPlayer; // G
@@ -43,6 +51,15 @@ public class SimulateGame {
   private static Player player1;
   private static Player player2;
 
+  /**
+   * Starts the simulation of the game.
+   * 
+   * This method initializes the game by allowing the user to choose the
+   * difficulty level, creating the world balance, calculating the game
+   * parameters, creating the players, initializing the available stones, and
+   * starting a new game. After each game, the world balance is printed and the
+   * user is prompted to start a new game or exit.
+   */
   public static void starSimulation() {
     boolean newGame = true;
     do {
@@ -59,7 +76,8 @@ public class SimulateGame {
     } while (newGame);
   }
 
-  public static void chooseDifficulty() {
+  // Allows the user to choose the difficulty level
+  private static void chooseDifficulty() {
     Menu menuDifficulty = new Menu(MENU_TITLE_DIFFICULTY, MENU_DIFFICULTY_OPTIONS, false, false, false);
     int difficulty = menuDifficulty.choose();
     switch (difficulty) {
@@ -83,12 +101,14 @@ public class SimulateGame {
     }
   }
 
-  public static void calculateParameters() {
+  // Calculates the game parameters based on the chosen difficulty level
+  private static void calculateParameters() {
     stonesPerTamaGolem = (int) Math.ceil((numberOfElements + 1) / 3.0) + 1;
     tamaGolemPerPlayer = (int) Math.ceil((numberOfElements - 1) * (numberOfElements - 2) / (stonesPerTamaGolem * 2.0));
     stonesPerElement = (int) Math.ceil((2.0 * tamaGolemPerPlayer * stonesPerTamaGolem) / numberOfElements);
   }
 
+  // Creates the players by prompting for their names
   private static void createPlayers() {
     String name1 = InputData.readNonEmptyString(MESSAGE_CREATE_FIRST_PLAYER, false);
     String name2 = InputData.readNonEmptyString(MESSAGE_CREATE_SECOND_PLAYER, false);
@@ -101,6 +121,7 @@ public class SimulateGame {
     player2 = new Player(name2, tamaGolemPerPlayer);
   }
 
+  // Initializes the available stones for each element
   private static void initializationStonesAvailable() {
     stonesAvailable = new HashMap<String, Integer>();
     for (String elementName : worldBalance.getWorldBalance().keySet()) {
@@ -108,6 +129,7 @@ public class SimulateGame {
     }
   }
 
+  // Starts a new game
   private static void newGame() {
     // lets star with choose the first tamaGolem
     boolean player1Alive = true;
@@ -136,6 +158,7 @@ public class SimulateGame {
     }
   }
 
+  // Evokes a new tamaGolem for the given player
   private static void tamaGolemEvocation(Player player) {
     System.out.println(String.format(MESSAGE_NEW_TAMA, player.getName(), player.getTamaGolemUsed() + 1,
         player.getTotalTamaGolemUsable()));
@@ -185,22 +208,32 @@ public class SimulateGame {
     }
   }
 
+  // Starts the fight between the tamaGolems of player1 and player2
   private static void startTamaGolemFight() {
+    // Get the tamaGolems for player 1 and player 2
     TamaGolem tamaGolemPlayer1 = player1.getTamaGolem();
     TamaGolem tamaGolemPlayer2 = player2.getTamaGolem();
+
+    // Continue the fight until one of the tamaGolems is dead
     while (!tamaGolemPlayer1.isDead() && !tamaGolemPlayer2.isDead()) {
+      // Execute the attacks for both tamaGolems
       String stone1 = tamaGolemPlayer1.executeAttack();
       String stone2 = tamaGolemPlayer2.executeAttack();
-      // refers to stone1
+
+      // Determine the interaction value between the stones
       int valueInteractionElements = worldBalance.getWorldBalance().get(stone1).getConnectionValueForNode(stone2);
       String strongerElement;
       if (valueInteractionElements < 0) {
+        // Reduce the life of tamaGolemPlayer1 and set the stronger element to stone2
         tamaGolemPlayer1.reduceLife(valueInteractionElements);
         strongerElement = stone2;
       } else {
+        // Reduce the life of tamaGolemPlayer2 and set the stronger element to stone1
         tamaGolemPlayer2.reduceLife(valueInteractionElements * -1);
         strongerElement = stone1;
       }
+
+      // Print the interaction result
       if (valueInteractionElements == 0) {
         System.out.println(String.format(MESSAGE_INTERACTION_STONES_TIE, stone1, stone2));
       } else {
@@ -208,6 +241,7 @@ public class SimulateGame {
       }
     }
 
+    // Check if any of the tamaGolems is dead and print the corresponding message
     if (player1.getTamaGolem().isDead()) {
       System.out.println(String.format(MESSAGE_TAMA_DIED, player1.getName()));
     }
