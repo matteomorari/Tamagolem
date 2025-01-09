@@ -79,3 +79,4 @@ public class TamaGolem {
     this.life += value;
   }
 }
+
